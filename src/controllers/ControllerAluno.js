@@ -4,11 +4,14 @@ const { Aluno } = require("../models/Aluno");
 const { Curso } = require("../models/Curso"); // <== Adicione esta linha
 
 class AlunoController {
-    adicionarAluno(id, nome, email, telefone, matricula, curso) {
+    async adicionarAluno(nome, email, telefone, matricula, curso) {
         try {
-            const novoAluno = new Aluno(nome, email, telefone, matricula, curso);
-            alunos.push(novoAluno);
-            return novoAluno;
+            const consulta = ` INSERT INTO aluno (nome, email, telefone, matricula, curso)
+                VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+            const valores = [nome, email, telefone, matricula, curso];
+            const res = await pool.query(consulta, valores);
+            console.log('Dados criados com sucesso!');
+            console.table(res.rows[0]);
         } catch (error) {
             console.error("Erro ao criar aluno:", error.message);
         }
